@@ -8,7 +8,7 @@
 // ==/UserScript==
 
 const trackspan = 30; // second
-const foundmessage = "新しいコミュニティ放送が見つかりました。追跡を終了します。\n移動しますか？";
+const foundmessage = "新しいコミュニティ放送が見つかりました。\n移動しますか？";
 
 /**
  * LiveInfo class
