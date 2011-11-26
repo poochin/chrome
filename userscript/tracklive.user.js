@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name    NicoNico Live Tracking Script
-// @version 1.0.1
+// @version 1.0.2
 // @match   http://live.nicovideo.jp/watch/lv*
 // @match   http://live.nicovideo.jp/watch/co*
 // @author  poochin
@@ -9,6 +9,13 @@
 
 const trackspan = 30; // second
 const foundmessage = "新しいコミュニティ放送が見つかりました。\n移動しますか？";
+const trackmark = 'autotracking';
+
+qs = window.location.search.match(/(\w+(=[^&]+)?)/g);
+if (qs && qs.indexOf(trackmark) != -1)
+    const isautotracking = true;
+else
+    const isautotracking = false;
 
 /**
  * LiveInfo class
@@ -69,8 +76,12 @@ function trackingNextLive() {
 
     liveinfo = new LiveInfo(html);
     if (currentliveinfo.liveid != liveinfo.liveid) {
-        if (confirm(foundmessage)) {
-            window.location = 'http://live.nicovideo.jp/watch/' + liveinfo.liveid;
+        nexturl = 'http://live.nicovideo.jp/watch/' + liveinfo.liveid;
+        if (isautotracking) {
+            window.location = nexturl + '?' + trackmark;
+        }
+        else if (confirm(foundmessage)) {
+            window.location = nexturl;
         }
     } else {
         setTimeout(trackingNextLive, trackspan * 1000);
@@ -79,5 +90,5 @@ function trackingNextLive() {
 
 currentliveinfo = new LiveInfo(document);
 
-setTimeout(trackingNextLive, 0);
+setTimeout(trackingNextLive, 0); // run ASAP
 
