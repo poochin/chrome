@@ -6,7 +6,7 @@
 // @version     1.0.3
 // @updated     2011-11-26
 // @updateURL   https://github.com/poochin/chrome/raw/master/userscript/tracklive.user.js
-// @description 閲覧中にニコニコ生放送の番組が終了した際に次の番組を自動追跡します。 終了済みの番組では確認ダイアログを表示します。
+// @description 閲覧中のニコニコ生放送の番組が終了した際に次の番組を自動追跡します。 終了済みの番組では確認ダイアログを表示します。
 // ==/UserScript==
 
 const trackspan = 30; // second
