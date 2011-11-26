@@ -1,21 +1,26 @@
 // ==UserScript==
-// @name    NicoNico Live Tracking Script
-// @version 1.0.2
-// @match   http://live.nicovideo.jp/watch/lv*
-// @match   http://live.nicovideo.jp/watch/co*
-// @author  poochin
-// @updated 2011-11-26
+// @name  NicoNico Live Tracking Script
+// @match http://live.nicovideo.jp/watch/lv*
+// @match http://live.nicovideo.jp/watch/co*
+// @author      poochin
+// @version     1.0.3
+// @updated     2011-11-26
+// @updateURL   https://github.com/poochin/chrome/raw/master/userscript/tracklive.user.js
+// @description 閲覧中にニコニコ生放送の番組が終了した際に次の番組を自動追跡します。 終了済みの番組では確認ダイアログを表示します。
 // ==/UserScript==
 
 const trackspan = 30; // second
 const foundmessage = "新しいコミュニティ放送が見つかりました。\n移動しますか？";
-const trackmark = 'autotracking';
+const url_getplayerstatus = 'http://live.nicovideo.jp/api/getplayerstatus/';
 
-qs = window.location.search.match(/(\w+(=[^&]+)?)/g);
-if (qs && qs.indexOf(trackmark) != -1)
-    const isautotracking = true;
-else
-    const isautotracking = false;
+currentliveinfo = new LiveInfo(document);
+
+xhr = httpref('GET', url_getplayerstatus + currentliveinfo.liveid, null, false);
+const isclosed = (xhr.responseXML.querySelector('getplayerstatus>error>code') ? true : false);
+delete xhr;
+
+setTimeout(trackingNextLive, 0); // run ASAP
+
 
 /**
  * LiveInfo class
@@ -68,17 +73,14 @@ function httpref(method, url, data, callback) {
 function trackingNextLive() {
     coid = currentliveinfo.coid;
 
-    nextliveurl = 'http://live.nicovideo.jp/watch/' + coid;
-    xhr = httpref('GET', nextliveurl, null, false);
+    xhr = httpref('GET', url_getplayerstatus + coid, null, false);
+    idelem = xhr.responseXML.querySelector('getplayerstatus>stream>id');
+    liveid = (idelem == null ? false : idelem.firstChild.data);
 
-    html = document.createElement('html');
-    html.innerHTML = xhr.responseText;
-
-    liveinfo = new LiveInfo(html);
-    if (currentliveinfo.liveid != liveinfo.liveid) {
-        nexturl = 'http://live.nicovideo.jp/watch/' + liveinfo.liveid;
-        if (isautotracking) {
-            window.location = nexturl + '?' + trackmark;
+    if (liveid && currentliveinfo.liveid != liveid) {
+        nexturl = 'http://live.nicovideo.jp/watch/' + liveid;
+        if (!isclosed) {
+            window.location = nexturl;
         }
         else if (confirm(foundmessage)) {
             window.location = nexturl;
@@ -87,8 +89,4 @@ function trackingNextLive() {
         setTimeout(trackingNextLive, trackspan * 1000);
     }
 }
-
-currentliveinfo = new LiveInfo(document);
-
-setTimeout(trackingNextLive, 0); // run ASAP
 
