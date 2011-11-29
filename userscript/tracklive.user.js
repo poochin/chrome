@@ -7,7 +7,7 @@
 // 
 // @author      poochin
 // @license     MIT
-// @updated     2011-11-27
+// @updated     2011-11-29
 // @updateURL   https://github.com/poochin/chrome/raw/master/userscript/tracklive.user.js
 // ==/UserScript==
 
@@ -17,8 +17,11 @@ const url_live = 'http://live.nicovideo.jp/watch/';
 
 const curliveinfo = new LiveInfo(document.documentElement);
 const alreadyclosed = isLiveClosed(curliveinfo.liveid);
+const isliveowner = isLiveOwner(document.documentElement);
 
-setTimeout(trackingNextLive, 0); // run ASAP
+if (!isliveowner) {
+    setTimeout(trackingNextLive, 0); // run ASAP
+}
 
 
 /**
@@ -36,6 +39,11 @@ function isLiveClosed(liveid) {
 
     code = xhr.responseXML.querySelector('getplayerstatus > error > code');
     return ((code && code.textContent == 'closed') ? true : false);
+}
+
+// isLiveOwner
+function isLiveOwner(html) {
+    return (html.querySelector('#utility_container') ? true : false);
 }
 
 // getLiveIdFromDocument function
