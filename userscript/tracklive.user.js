@@ -11,6 +11,10 @@
 // @updateURL   https://github.com/poochin/chrome/raw/master/userscript/tracklive.user.js
 // ==/UserScript==
 
+// FIXME: 最新の放送枠が放送中ではない場合もある
+// FIXME: 視聴者数を水増しするバグが潜んでいます。 getstatusplayer API と live ページのどちらを開いても視聴者数が増えてしまうようです。
+
+
 const trackspan = 30; // second
 const foundmessage = "新しいコミュニティ放送が見つかりました。\n移動しますか？";
 const url_live = 'http://live.nicovideo.jp/watch/';
@@ -19,7 +23,7 @@ const curliveinfo = new LiveInfo(document.documentElement);
 const alreadyclosed = isLiveClosed(curliveinfo.liveid);
 const isliveowner = isLiveOwner(document.documentElement);
 
-if (!isliveowner) {
+if (isliveowner == false) {
     setTimeout(trackingNextLive, 0); // run ASAP
 }
 
@@ -70,6 +74,8 @@ function httpref(method, url, data, callback) {
     xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
+            async == true &&
+                callback(this);
             if (async) {
                 callback(this);
             }
