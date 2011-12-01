@@ -11,9 +11,11 @@
 // @updateURL   https://github.com/poochin/chrome/raw/master/userscript/tracklive.user.js
 // ==/UserScript==
 
-// FIXME: 最新の放送枠が放送中ではない場合もある
+// fixed: 最新の放送枠が放送中ではない場合もある
+// 
 // FIXME: 視聴者数を水増しするバグが潜んでいます。 getstatusplayer API と live ページのどちらを開いても視聴者数が増えてしまうようです。
 
+// TODO: http://sp.live.nicovideo.jp/gate/lv を用いることで、放送者数の水増しを防ぐ事が出来無いだろうか。
 
 const trackspan = 30; // second
 const foundmessage = "新しいコミュニティ放送が見つかりました。\n移動しますか？";
@@ -34,6 +36,7 @@ if (isliveowner == false) {
 function LiveInfo(html) {
     this.coid = getCommunityIdFromDocument(html);
     this.liveid = getLiveIdFromDocument(html);
+    this.livenum = parseInt(this.liveid.match(/\d+/));
 }
 
 // isAlreadyClosed
@@ -93,12 +96,14 @@ function trackingNextLive() {
     html.innerHTML = xhr.responseText;
 
     liveinfo = new LiveInfo(html);
-    if (curliveinfo.liveid != liveinfo.liveid) {
-        if (!alreadyclosed || confirm(foundmessage)) {
-            window.location = url_live + liveinfo.liveid;
+    if (liveinfo.livenum > curliveinfo.livenum) {
+        if (!isLiveClosed(liveinfo.liveid)) {
+            if (!alreadyclosed || confirm(foundmessage)) {
+                window.location = url_live + liveinfo.liveid;
+            }
         }
-    } else {
-        setTimeout(trackingNextLive, trackspan * 1000);
+        return;
     }
+    setTimeout(trackingNextLive, trackspan * 1000);
 }
 
