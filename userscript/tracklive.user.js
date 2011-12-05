@@ -2,20 +2,23 @@
 // @name        NicoNico Live Tracking Script
 // @match       http://live.nicovideo.jp/watch/lv*
 // @match       http://live.nicovideo.jp/watch/co*
-// @version     1.0.4
+// @version     1.0.5
 // @description 閲覧中のニコニコ生放送の番組が終了した際に次の番組を自動追跡します。 終了済みの番組では確認ダイアログを表示します。
 // 
 // @author      poochin
 // @license     MIT
-// @updated     2011-11-29
+// @updated     2011-12-05
 // @updateURL   https://github.com/poochin/chrome/raw/master/userscript/tracklive.user.js
 // ==/UserScript==
 
-// fixed: 最新の放送枠が放送中ではない場合もある
-// 
-// FIXME: 視聴者数を水増しするバグが潜んでいます。 getstatusplayer API と live ページのどちらを開いても視聴者数が増えてしまうようです。
-
-// TODO: http://sp.live.nicovideo.jp/gate/lv を用いることで、放送者数の水増しを防ぐ事が出来無いだろうか。
+// ----- [Report] -----
+// TODO: Nothong
+// -----
+// BUGGED: 新着放送の有無を確認するたびに視聴者数が増えるバグを抱えています
+// FIXME: 予約ページを見るとタイムシフトのページに飛んでしまう
+// -----
+// FIXed: 最新の放送枠が放送中ではない場合もある
+// ----- [/Report] -----
 
 const trackspan = 30; // second
 const foundmessage = "新しいコミュニティ放送が見つかりました。\n移動しますか？";
