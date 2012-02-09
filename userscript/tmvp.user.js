@@ -11,18 +11,35 @@
 // ==/UserScript==
 
 var script = function () {
-    _pc = ViewManager.prototype.putCell;
+    /* Proxy: ViewManager.putCell */
+    var _pc = ViewManager.prototype.putCell;
     ViewManager.prototype.putCell = function (_img) {
         _pc.apply(this, [_img]);
-        _req = this.ILC.ARC.onlyRequest;
-        sign = (_req.type == "oldest" ? "-" : "+");
-        offset = (_req.type == "oldest" ? _req.oldestStart : _req.offset);
-        h = ["!", _req.name, sign + offset].join("/");
         if (location.hash == UrlHashManager.beforeHash) {
+            _req = this.ILC.ARC.onlyRequest;
+            sign = (_req.type == "oldest" ? "-" : "+");
+            offset = (_req.type == "oldest" ? _req.oldestStart : _req.offset);
+            lencache = (this.ILC.imagesList.length + this.ILC.ARC.objectList.length);
+            offset -= parseInt(sign + '1') * lencache;
+            h = ["!", _req.name, sign + offset].join("/");
             location.hash = h;
             UrlHashManager.beforeHash = location.hash;
         }
-    }
+    };
+    /* 派生: ApiReadRequest */
+    var _ar = ApiReadRequest;
+    ApiReadRequest = function(_Summary, _ApiReadController) {
+        if (_Summary.oldestStart) {
+            this.getNextOldestFirst = this.getNextOldest;
+        }
+        else {
+            this.getNextOldestFirst = _ar.prototype.getNextOldestFirst;
+        }
+        _ar.apply(this, [_Summary, _ApiReadController]);
+        this.oldestStart = _Summary.oldestStart || 0;
+    };
+    ApiReadRequest.prototype = _ar.prototype;
+
     UrlHashManager.refreshPage = function () {
         this.beforeHash = location.hash;
         this.oldCheck();
@@ -42,7 +59,7 @@ var script = function () {
                     switch (h[0]) {
                         case "#": _summary.tag = h.slice(1); break;
                         case "+": _summary.offset = parseInt(h.slice(1)); break;
-                        case "-": _summary.offset = parseInt(h.slice(1)); _summary.type = "oldest"; break;
+                        case "-": _summary.oldestStart = parseInt(h.slice(1)); _summary.type = "oldest"; break;
                         default: break;
                     }
                     switch (h) {
