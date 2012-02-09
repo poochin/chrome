@@ -11,14 +11,6 @@
 // @updateURL   https://github.com/poochin/chrome/raw/master/userscript/tracklive.user.js
 // ==/UserScript==
 
-// ----- [Report] -----
-// TODO: Nothong
-// -----
-// BUGGED: 新着放送の有無を確認するたびに視聴者数が増えるバグを抱えています
-// FIXME: 予約ページを見るとタイムシフトのページに飛んでしまう
-// -----
-// FIXed: 最新の放送枠が放送中ではない場合もある
-// ----- [/Report] -----
 
 const trackspan = 30; // second
 const foundmessage = "新しいコミュニティ放送が見つかりました。\n移動しますか？";
@@ -28,7 +20,7 @@ const curliveinfo = new LiveInfo(document.documentElement);
 const alreadyclosed = isLiveClosed(curliveinfo.liveid);
 const isliveowner = isLiveOwner(document.documentElement);
 
-if (isliveowner == false) {
+if (!isliveowner) {
     setTimeout(trackingNextLive, 0); // run ASAP
 }
 
@@ -80,8 +72,6 @@ function httpref(method, url, data, callback) {
     xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-            async == true &&
-                callback(this);
             if (async) {
                 callback(this);
             }
