@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Tumblr Mosaic Viewer p'Plus
 // @match       http://tmv.proto.jp/*
-// @version     1.0.1
+// @version     1.0.2
 // @description Tumblr Mosaic Viewer でオフセットオプションが動くようにします
 // 
 // @author      poochin
@@ -78,7 +78,7 @@ var script = function () {
                 h = ["!", req.name, offset].join("/");
                 location.hash = h;
                 UrlHashManager.beforeHash = location.hash;
-                blankspan = 400;
+                blankspan = 1000;
             }
         }
         setTimeout(arguments.callee, blankspan);
