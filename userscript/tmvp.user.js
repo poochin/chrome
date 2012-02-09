@@ -79,7 +79,7 @@ var script = function () {
 function main() {
     elm = window.document.createElement('script');
     elm.innerHTML = '(' + script.toString() + ')()';
-    console.log(elm);
+    /* console.log(elm); */
     window.document.body.appendChild(elm);
 }
 
