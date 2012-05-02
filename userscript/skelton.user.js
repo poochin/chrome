@@ -14,7 +14,7 @@ function main() {
 }
 
 function isExecPage() {
-    if (/^https?:\/\/www\.tumblr\.com\//.test(location) /* for Opera */) {
+    if (/^https?:\/\/[^\/]+\/.*/.test(location) /* for Opera */) {
         return true;
     }
 }
